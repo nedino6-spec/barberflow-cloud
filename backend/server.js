@@ -13,7 +13,7 @@ const dbManager = require('./database');
 const { startMarketingWorker } = require('./marketing_worker');
 
 const JWT_SECRET = 'barberflow_super_secret_key_2026';
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 process.on('uncaughtException', (err) => {
     console.error(`[${new Date().toLocaleString()}] ERRO: ${err.stack}`);
