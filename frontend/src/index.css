@@ -308,10 +308,10 @@ body {
 /* BOTÃO FLUTUANTE WHATSAPP */
 .floating-wa {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 60px;
-  height: 60px;
+  bottom: 90px; /* Ajustado para não sobrepor o menu mobile */
+  right: 20px;
+  width: 56px;
+  height: 56px;
   background: #25d366;
   color: white;
   border-radius: 50%;
@@ -323,6 +323,16 @@ body {
   z-index: 1000;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+
+@media (min-width: 769px) {
+  .floating-wa {
+    bottom: 24px;
+    right: 24px;
+    width: 60px;
+    height: 60px;
+  }
+}
+
 
 .floating-wa:hover {
   transform: scale(1.1) rotate(5deg);
@@ -347,15 +357,77 @@ body {
 /* ANIMAÇÕES */
 @keyframes spin { 100% { transform: rotate(360deg); } }
 
+/* MOBILE NAV (BOTTOM BAR) */
+.mobile-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: rgba(13, 15, 18, 0.95);
+  backdrop-filter: blur(15px);
+  border-top: 1px solid var(--glass-border);
+  z-index: 1001;
+  padding: 0 10px;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.mobile-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 8px;
+  border-radius: 12px;
+  transition: all 0.2s;
+  min-width: 60px;
+}
+
+.mobile-nav-item.active {
+  color: var(--primary);
+}
+
+.mobile-nav-item.active svg {
+  transform: translateY(-2px);
+}
+
 /* MOBILE AJUSTES */
 @media (max-width: 768px) {
   .page-sidebar {
-    display: none; /* Em mobile usaremos o menu inferior ou lateral flutuante */
-  }
-  .page-header {
-    padding: 0 16px;
-  }
-  .header-search {
     display: none;
   }
+  
+  .mobile-nav {
+    display: flex;
+  }
+
+  .main-viewport {
+    padding: 16px;
+    padding-bottom: 90px; /* Espaço para o menu inferior */
+  }
+
+  .page-header {
+    padding: 0 16px;
+    height: 60px;
+  }
+
+  .header-search, .user-info {
+    display: none;
+  }
+
+  .user-profile {
+    padding-left: 0;
+    border-left: none;
+  }
+
+  .glass-panel {
+    padding: 16px;
+  }
 }
+

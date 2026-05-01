@@ -1,7 +1,8 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Bell, User, LayoutDashboard, Calendar, Users, Megaphone, DollarSign, BookOpen, Settings as SettingsIcon, LogOut, Menu } from 'lucide-react';
+import { Search, Bell, User, LayoutDashboard, Calendar, Users, Megaphone, DollarSign, BookOpen, Settings as SettingsIcon, LogOut, Menu, Home, MessageSquare } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';
 
 // Componentes
@@ -74,7 +75,35 @@ const Topbar = () => {
       </div>
     </header>
   );
+ };
+ 
+const MobileNav = () => {
+  return (
+    <nav className="mobile-nav">
+      <NavLink to="/" className={({ isActive }) => `mobile-nav-item ${isActive ? 'active' : ''}`}>
+        <Home size={22} />
+        <span>Início</span>
+      </NavLink>
+      <NavLink to="/agendamentos" className={({ isActive }) => `mobile-nav-item ${isActive ? 'active' : ''}`}>
+        <Calendar size={22} />
+        <span>Agenda</span>
+      </NavLink>
+      <NavLink to="/clientes" className={({ isActive }) => `mobile-nav-item ${isActive ? 'active' : ''}`}>
+        <Users size={22} />
+        <span>Clientes</span>
+      </NavLink>
+      <NavLink to="/financeiro" className={({ isActive }) => `mobile-nav-item ${isActive ? 'active' : ''}`}>
+        <DollarSign size={22} />
+        <span>Caixa</span>
+      </NavLink>
+      <NavLink to="/settings" className={({ isActive }) => `mobile-nav-item ${isActive ? 'active' : ''}`}>
+        <SettingsIcon size={22} />
+        <span>Ajustes</span>
+      </NavLink>
+    </nav>
+  );
 };
++
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -138,8 +167,10 @@ function App() {
                 </Suspense>
               </div>
             </main>
+            <MobileNav />
           </>
         )}
+
       </div>
     </BrowserRouter>
   );
