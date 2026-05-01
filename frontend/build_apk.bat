@@ -3,6 +3,15 @@ echo ===========================================
 echo INICIANDO COMPILACAO DO APK BARBERFLOW
 echo ===========================================
 
+echo.
+echo [0/4] Limpando versoes antigas...
+if exist "android\app\build\outputs\apk\debug\app-debug.apk" (
+    del /f /q "android\app\build\outputs\apk\debug\app-debug.apk"
+    echo ✅ APK antigo removido.
+) else (
+    echo ℹ️ Nenhum APK antigo encontrado.
+)
+
 :: Set Android and Java Paths
 set ANDROID_HOME=C:\Users\nedin\AppData\Local\Android\Sdk
 set JAVA_HOME=C:\Program Files\Android\Android Studio\jbr
