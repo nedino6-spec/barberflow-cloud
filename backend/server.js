@@ -276,7 +276,9 @@ const serverInstance = server.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 SERVIDOR ON: http://localhost:${PORT}`);
     startWhatsApp(io);
     startMarketingWorker();
-    startTunnel(); 
+    if (process.env.NODE_ENV !== 'production') {
+        startTunnel(); 
+    }
 });
 
 serverInstance.on('error', (err) => {
