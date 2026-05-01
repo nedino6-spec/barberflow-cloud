@@ -384,6 +384,4 @@ export default function WhatsAppPage() {
       `}</style>
     </main>
   );
-}>
-  );
 }

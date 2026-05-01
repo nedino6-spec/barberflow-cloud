@@ -10,9 +10,19 @@ export const setToken = (token) => {
 export const getServerUrl = () => {
   const hostname = window.location.hostname;
   
-  // Se estiver acessando do próprio PC local, NUNCA usar URL salva, sempre forçar localhost
+  // URL Pública Permanente (Túnel)
+  const PUBLIC_URL = 'https://barberflow-elite-nedino.loca.lt';
+
+  // Se estiver acessando via APK (hostname localhost no WebView), preferir a URL salva ou a Pública
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    return `${window.location.protocol}//${hostname}:3001`;
+    const saved = localStorage.getItem('server_url');
+    if (saved) return saved;
+    // Se não tiver salva, e estiver no PC (porta 3000 ou 5173 costumam ser dev), usa local:3001
+    if (window.location.port === '3000' || window.location.port === '5173') {
+        return `http://${hostname}:3001`;
+    }
+    // Caso contrário (APK), usa a URL pública
+    return PUBLIC_URL;
   }
 
   const saved = localStorage.getItem('server_url');
@@ -21,12 +31,7 @@ export const getServerUrl = () => {
   if (hostname.startsWith('192.168.')) {
     return `${window.location.protocol}//${hostname}:3001`;
   } else {
-    // Se for um link público ou outro, usa o endereço atual do navegador
-    let url = `${window.location.protocol}//${window.location.hostname}`;
-    if (window.location.port && window.location.port !== '80' && window.location.port !== '443') {
-        url += `:${window.location.port}`;
-    }
-    return url;
+    return `${window.location.protocol}//${window.location.hostname}${window.location.port ? ':' + window.location.port : ''}`;
   }
 };
 

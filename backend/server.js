@@ -206,9 +206,35 @@ app.get('/api/marketing/raffle/last', async (req, res) => {
 });
 
 app.post('/api/marketing/broadcast', async (req, res) => {
-    const { message, target } = req.body;
-    // Lógica de envio em massa omitida no momento, pode ser implementada com WhatsApp
-    res.json({ success: true, message: 'Mensagem enviada com sucesso!' });
+    const { message } = req.body;
+    if (!message) return res.status(400).json({ error: 'Mensagem vazia' });
+
+    const clients = await dbManager.getClients();
+    const waClient = getClient();
+
+    if (!waClient) return res.status(500).json({ error: 'WhatsApp desconectado' });
+
+    // Envio em background para não travar a tela
+    (async () => {
+        console.log(`[Marketing] Iniciando transmissão para ${clients.length} clientes...`);
+        for (const client of clients) {
+            try {
+                // Limpa o número (remove caracteres não numéricos)
+                const cleanPhone = client.phone.replace(/\D/g, '');
+                if (cleanPhone.length >= 10) {
+                    await waClient.sendMessage(`${cleanPhone}@s.whatsapp.net`, message);
+                    console.log(`[Marketing] Enviado para ${client.name} (${cleanPhone})`);
+                    // Intervalo de 3 a 7 segundos para evitar BAN
+                    await new Promise(resolve => setTimeout(resolve, 3000 + Math.random() * 4000));
+                }
+            } catch (e) {
+                console.error(`Erro ao enviar para ${client.name}:`, e.message);
+            }
+        }
+        console.log(`[Marketing] Transmissão concluída!`);
+    })();
+
+    res.json({ success: true, message: `O robô começou a enviar a mensagem para ${clients.length} clientes em segundo plano.` });
 });
 
 // Upload Dummy
@@ -216,13 +242,24 @@ app.post('/api/upload', (req, res) => {
     res.json({ success: true, url: '' });
 });
 
-// Tunelamento
-async function startTunnel() {
+// Tunelamento com Retry
+async function startTunnel(retries = 5) {
     try {
-        const tunnel = await localtunnel({ port: PORT, subdomain: 'barberflow-' + os.hostname().toLowerCase().replace(/[^a-z0-9]/g, '') });
-        console.log(`🌍 ACESSO REMOTO: ${tunnel.url}`);
+        console.log(`🌍 Tentando estabelecer acesso remoto (Tentativa ${6 - retries}/5)...`);
+        const tunnel = await localtunnel({ port: PORT, subdomain: 'barberflow-elite-nedino' });
+        console.log(`🌍 ACESSO REMOTO ATIVO: ${tunnel.url}`);
         await dbManager.setSetting('public_url', tunnel.url);
-    } catch (e) {}
+        
+        tunnel.on('close', () => {
+            console.log('🌍 Túnel fechado. Tentando reconectar...');
+            startTunnel();
+        });
+    } catch (e) {
+        console.error(`❌ Erro no túnel: ${e.message}`);
+        if (retries > 0) {
+            setTimeout(() => startTunnel(retries - 1), 10000);
+        }
+    }
 }
 
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
@@ -235,9 +272,19 @@ app.get(/.*/, (req, res) => {
     res.sendFile(path.resolve(__dirname, '../frontend/dist/index.html'));
 });
 
-server.listen(PORT, '0.0.0.0', () => {
+const serverInstance = server.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 SERVIDOR ON: http://localhost:${PORT}`);
     startWhatsApp(io);
     startMarketingWorker();
-    // startTunnel(); // Desativado para evitar conflitos de conexão
+    startTunnel(); 
+});
+
+serverInstance.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+        console.error(`\n❌ ERRO: A porta ${PORT} já está em uso!`);
+        console.error(`💡 DICA: O sistema tentará fechar processos antigos automaticamente.`);
+        process.exit(1);
+    } else {
+        console.error('❌ Erro no servidor:', err);
+    }
 });
