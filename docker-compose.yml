@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  barberflow:
+    build: .
+    container_name: barberflow_app
+    ports:
+      - "3001:3001"
+    volumes:
+      # Persistência do Banco de Dados
+      - ./backend/database.sqlite:/app/backend/database.sqlite
+      # Persistência da Sessão do WhatsApp
+      - ./backend/auth_baileys:/app/backend/auth_baileys
+      # Persistência de uploads (fotos de serviços/clientes)
+      - ./backend/uploads:/app/backend/uploads
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - PORT=3001

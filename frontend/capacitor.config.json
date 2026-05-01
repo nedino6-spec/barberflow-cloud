@@ -1,0 +1,8 @@
+{
+  "appId": "com.barberflow.app",
+  "appName": "BarberFlow",
+  "webDir": "dist",
+  "server": {
+    "cleartext": true
+  }
+}

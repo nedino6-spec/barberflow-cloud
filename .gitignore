@@ -1,0 +1,14 @@
+node_modules/
+.DS_Store
+dist/
+.env
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+auth_baileys/
+session_data/
+C:\BarberFlowSession
+crash.log
+frontend/dist/
+backend/session_data/
+backend/database.sqlite

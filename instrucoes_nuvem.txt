@@ -1,0 +1,25 @@
+COMO COLOCAR O BARBERFLOW NA NUVEM (ONLINE 24H)
+
+Para o seu sistema rodar sozinho sem precisar do seu computador ligado, siga este passo a passo simples:
+
+1. ESCOLHA UMA PLATAFORMA:
+   - Recomendamos o Railway.app (muito simples) ou Render.com.
+
+2. PREPARE OS ARQUIVOS:
+   - Certifique-se de ter rodado o 'atualizar_sistema.bat' no seu PC pelo menos uma vez para gerar a pasta 'dist' dentro de 'frontend'.
+
+3. SUBIR PARA O GITHUB (Ou arrastar arquivos):
+   - Crie uma conta no GitHub.com.
+   - Suba as pastas 'backend', 'frontend' e o arquivo 'Dockerfile'.
+
+4. CONECTAR AO RAILWAY/RENDER:
+   - No Railway, clique em 'New Project' -> 'Deploy from GitHub repo'.
+   - Selecione o seu projeto.
+   - O sistema vai ler o 'Dockerfile' e ligar tudo sozinho.
+
+5. ACESSO FINAL:
+   - A plataforma vai te dar um link (ex: https://barberflow-production.up.railway.app).
+   - Abra esse link no seu computador UMA VEZ para escanear o QR Code do WhatsApp.
+   - Pronto! Agora o seu APK pode usar esse novo link e o sistema nunca mais desliga.
+
+DICA: Se precisar de ajuda para configurar o servidor, eu posso te orientar em cada clique!

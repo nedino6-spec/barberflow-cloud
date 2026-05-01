@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="preconnect" href="https://firebasestorage.googleapis.com" crossorigin>
+    <link rel="dns-prefetch" href="https://firebasestorage.googleapis.com">
+    <link rel="preload" as="image" href="/logo-miniatura.png">
+    <link rel="icon" type="image/png" href="/logo-miniatura.png" />
+    <meta name="description" content="BarberFlow - O sistema de gestão mais avançado para barbearias de elite. Agendamento, Marketing AI e Financeiro.">
+    <meta property="og:title" content="BarberFlow - Gestão Inteligente">
+    <meta property="og:description" content="Automatize sua barbearia com o Robô Ultimate Elite. Agenda Online e Financeiro Integrado.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="/logo-miniatura.png">
+    <meta name="theme-color" content="#0d0f12" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>BarberFlow - Painel de Gestão</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').then(reg => {
+            console.log('BarberFlow PWA Registrado!', reg.scope);
+          }).catch(err => {
+            console.log('Falha ao registrar PWA:', err);
+          });
+        });
+      }
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
