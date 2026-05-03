@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Bell, User, LayoutDashboard, Calendar, Users, Megaphone, DollarSign, BookOpen, Settings as SettingsIcon, LogOut, Menu, Home, MessageSquare } from 'lucide-react';
+import { Search, Bell, User, LayoutDashboard, Calendar, Users, Megaphone, DollarSign, BookOpen, Settings as SettingsIcon, LogOut, Menu, Home, MessageSquare, Scissors } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';
 
@@ -32,7 +32,21 @@ const Preloader = ({ messages }) => {
       exit={{ opacity: 0 }}
       className="preloader"
     >
-      <img src="/logo.png" alt="BarberFlow" className="preloader-logo" onError={(e) => e.target.src = "https://cdn-icons-png.flaticon.com/512/3063/3063822.png"} />
+      <motion.div
+        animate={{ 
+          rotate: [0, 10, -10, 10, 0],
+          scale: [1, 1.1, 1]
+        }}
+        transition={{ 
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        style={{ color: 'var(--primary)', marginBottom: '30px' }}
+      >
+        <Scissors size={80} strokeWidth={1.5} />
+      </motion.div>
+      <h1 style={{ color: 'var(--primary)', fontSize: '1.2rem', fontWeight: '800', marginBottom: '20px', letterSpacing: '2px' }}>ND BARBER PREMIUM</h1>
       <div className="loader-spinner"></div>
       <AnimatePresence mode="wait">
         <motion.p
@@ -67,10 +81,10 @@ const Topbar = () => {
 
         <div className="user-profile">
           <div className="user-info">
-            <span className="user-name">Barbearia Elite</span>
+            <span className="user-name">ND Barbearia</span>
             <span className="user-role">Administrador</span>
           </div>
-          <img src="https://ui-avatars.com/api/?name=Barber+Elite&background=d4af37&color=000" alt="User" className="user-avatar" />
+          <img src="https://ui-avatars.com/api/?name=ND+Premium&background=d4af37&color=000" alt="User" className="user-avatar" />
         </div>
       </div>
     </header>
@@ -103,7 +117,6 @@ const MobileNav = () => {
     </nav>
   );
 };
-+
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);

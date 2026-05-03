@@ -8,7 +8,11 @@ import toast from 'react-hot-toast';
 import { apiFetch, getServerUrl } from '../api';
 
 const baseUrl = getServerUrl();
-const socket = io(baseUrl);
+const socket = io(baseUrl, {
+  extraHeaders: {
+    "Bypass-Tunnel-Reminder": "true"
+  }
+});
 
 export default function Dashboard() {
   const [waStatus, setWaStatus] = useState('disconnected');
@@ -112,7 +116,10 @@ export default function Dashboard() {
     fetchServices();
     fetchQueue();
 
-    apiFetch('/api/network-info').then(res => res.json()).then(data => setLocalIp(data.ip));
+    apiFetch('/api/network-info')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if(data) setLocalIp(data.ip); })
+      .catch(e => console.error("Erro IP:", e));
     
     socket.on('whatsapp_status', (status) => {
       setWaStatus(status);
@@ -233,43 +240,102 @@ export default function Dashboard() {
 
   return (
     <main className="main-viewport">
+      {/* Barra de Status de Conexão - Crucial para saber se está no PC ou Nuvem */}
+      <div className="glass-panel" style={{ 
+        padding: '8px 16px', 
+        marginBottom: '20px', 
+        display: 'flex', 
+        flexDirection: 'column',
+        gap: '10px',
+        borderLeft: waStatus === 'connected' ? '4px solid var(--success)' : '4px solid var(--danger)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.8rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ 
+              width: '8px', 
+              height: '8px', 
+              borderRadius: '50%', 
+              background: waStatus === 'connected' ? 'var(--success)' : 'var(--danger)',
+              boxShadow: waStatus === 'connected' ? '0 0 10px var(--success)' : 'none'
+            }}></div>
+            <span>Status: <b>{waStatus === 'connected' ? 'ONLINE' : 'DESCONECTADO'}</b></span>
+          </div>
+          <button onClick={() => { localStorage.removeItem('server_url'); window.location.reload(); }} style={{ padding: '4px 8px', fontSize: '0.7rem' }} className="btn-glass">
+            Resetar Conexão
+          </button>
+        </div>
+        
+        {waStatus === 'offline' && (
+          <div style={{ padding: '10px', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '10px' }}>
+            <p style={{ margin: '0 0 10px 0', fontSize: '0.75rem', color: 'var(--danger)' }}>
+              ⚠️ Não foi possível conectar automaticamente.
+            </p>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <input 
+                id="manual_ip"
+                type="text" 
+                placeholder="Ex: http://192.168.24.13:3001" 
+                style={{ flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid var(--danger)', background: 'transparent', color: '#fff', fontSize: '0.8rem' }}
+              />
+              <button 
+                className="btn-primary" 
+                style={{ padding: '8px 12px', fontSize: '0.8rem' }}
+                onClick={() => {
+                  const val = document.getElementById('manual_ip').value;
+                  if (val) {
+                    localStorage.setItem('server_url', val);
+                    window.location.reload();
+                  }
+                }}
+              >
+                Conectar
+              </button>
+            </div>
+            <p style={{ margin: '8px 0 0 0', fontSize: '0.65rem', color: 'var(--text-muted)' }}>
+              Digite o "ACESSO LOCAL" que aparece no terminal do seu computador.
+            </p>
+          </div>
+        )}
+
+        <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+          Servidor Atual: <code style={{ color: 'var(--primary)' }}>{baseUrl}</code>
+        </div>
+      </div>
+
       {/* Banner de Boas-vindas Estilo Gendo */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-panel"
+        className="glass-panel welcome-banner"
         style={{ 
-          marginBottom: '32px', 
+          marginBottom: '24px', 
           background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(0,0,0,0) 100%)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '32px'
+          padding: '24px'
         }}
       >
-        <div>
-          <h2 style={{ fontSize: '1.8rem', marginBottom: '8px' }}>Bem-vindo ao <span className="text-gold">BarberFlow Elite</span></h2>
-          <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '1rem' }}>
-            Sua barbearia está operando com o robô de inteligência ativa. Tudo sob controle.
+        <div className="welcome-text">
+          <h2 style={{ fontSize: '1.4rem', marginBottom: '4px' }}>ND Barbearia <span className="text-gold">Premium</span></h2>
+          <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.9rem' }}>
+            {waStatus === 'connected' ? '✅ Robô WhatsApp Ativo' : '❌ Robô Offline'}
           </p>
         </div>
-        <div className="no-mobile" style={{ display: 'flex', gap: '16px' }}>
-          <button className="btn-primary" onClick={() => setShowAddModal(true)}>
-            <Plus size={18} style={{ marginRight: '8px' }} /> Novo Agendamento
-          </button>
-          <button className="btn-glass" onClick={() => setShowMobileQr(true)}>
-            <Smartphone size={18} style={{ marginRight: '8px' }} /> App Celular
+        <div className="no-mobile" style={{ display: 'flex', gap: '12px' }}>
+          <button className="btn-primary" onClick={() => setShowAddModal(true)} style={{ padding: '8px 16px' }}>
+            <Plus size={18} /> Novo
           </button>
         </div>
       </motion.div>
 
       {/* Grid de Estatísticas Premium */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '24px', marginBottom: '40px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginBottom: '24px' }}>
         {[
-          { label: 'Hoje (Concluídos)', val: stats.completed_appointments, icon: <UserCheck />, color: 'var(--success)', trend: '+12%' },
-          { label: 'Receita de Hoje', val: `R$ ${stats.daily_revenue?.toFixed(2) || '0.00'}`, icon: <TrendingUp />, color: 'var(--primary)', trend: '+5%' },
-          { label: 'Na Espera', val: waitingQueue.length, icon: <Clock />, color: 'var(--warning)', trend: 'Fila Ativa' },
-          { label: 'Em Serviço', val: servingQueue.length, icon: <Play />, color: 'var(--info)', trend: 'Trabalhando' }
+          { label: 'Hoje', val: stats.completed_appointments, icon: <UserCheck />, color: 'var(--success)', trend: '+12%' },
+          { label: 'Receita', val: `R$ ${stats.daily_revenue?.toFixed(0) || '0'}`, icon: <TrendingUp />, color: 'var(--primary)', trend: '+5%' },
+          { label: 'Fila', val: waitingQueue.length, icon: <Clock />, color: 'var(--warning)', trend: 'Ativo' },
+          { label: 'Chat', val: servingQueue.length, icon: <Play />, color: 'var(--info)', trend: 'OK' }
         ].map((item, i) => (
           <motion.div 
             key={i}
@@ -277,18 +343,15 @@ export default function Dashboard() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: i * 0.1 }}
             className="glass-panel" 
-            style={{ padding: '24px', position: 'relative', borderLeft: `4px solid ${item.color}` }}
+            style={{ padding: '16px', position: 'relative', borderLeft: `3px solid ${item.color}` }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <div style={{ padding: '10px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', color: item.color }}>
-                {item.icon}
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <div style={{ padding: '6px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', color: item.color }}>
+                {React.cloneElement(item.icon, { size: 16 })}
               </div>
-              <span style={{ fontSize: '0.75rem', color: item.color, fontWeight: 700, background: 'rgba(255,255,255,0.03)', padding: '4px 8px', borderRadius: '8px' }}>
-                {item.trend}
-              </span>
             </div>
-            <p style={{ margin: '0 0 8px 0', fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 500 }}>{item.label}</p>
-            <h3 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800, letterSpacing: '-1px' }}>{item.val}</h3>
+            <p style={{ margin: '0 0 4px 0', fontSize: '0.75rem', color: 'var(--text-muted)' }}>{item.label}</p>
+            <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800 }}>{item.val}</h3>
           </motion.div>
         ))}
       </div>

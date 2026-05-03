@@ -38,10 +38,18 @@ cd android
 call gradlew assembleDebug
 cd ..
 
+echo [5/5] Disponibilizando para download no servidor...
+set SERVER_PUBLIC=..\..\servidor\public
+if exist "android\app\build\outputs\apk\debug\app-debug.apk" (
+    copy /y "android\app\build\outputs\apk\debug\app-debug.apk" "%SERVER_PUBLIC%\barberflow.apk"
+    echo ✅ APK copiado para o servidor!
+    echo 🔗 Link para download: https://moisten-illusion-city.ngrok-free.dev/barberflow.apk
+)
+
 echo.
 echo ===========================================
 echo PROCESSO FINALIZADO COM SUCESSO!
-echo O APK ESTA DISPONIVEL EM:
-echo frontend\android\app\build\outputs\apk\debug\app-debug.apk
+echo O APK ESTA DISPONIVEL PARA DOWNLOAD EM:
+echo https://moisten-illusion-city.ngrok-free.dev/barberflow.apk
 echo ===========================================
 pause

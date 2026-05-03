@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Plus, Trash2, Edit2 } from 'lucide-react';
-import { apiFetch } from '../api';
+import { apiFetch, setServerUrl, getServerUrl } from '../api';
 import { toast } from 'react-hot-toast';
+import { Globe, Save, Plus, Trash2, Edit2 } from 'lucide-react';
 
 export default function Settings() {
   const [greetingMsg, setGreetingMsg] = useState('');
@@ -14,6 +14,7 @@ export default function Settings() {
   const [calledMsg, setCalledMsg] = useState('');
   const [completionMsg, setCompletionMsg] = useState('');
   const [debtMsg, setDebtMsg] = useState('');
+  const [serverUrl, setServerUrlState] = useState(getServerUrl());
   
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -149,6 +150,33 @@ export default function Settings() {
       </header>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '24px' }}>
+        
+        {/* Sessão Conexão: Para o APK se conectar ao Servidor */}
+        <section className="glass-panel" style={{ padding: '24px', gridColumn: '1 / -1', border: '1px solid var(--primary)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '15px' }}>
+            <div style={{ background: 'rgba(0, 242, 255, 0.1)', padding: '10px', borderRadius: '10px', color: 'var(--primary)' }}>
+              <Globe size={20} />
+            </div>
+            <div>
+              <h3 style={{ margin: 0 }}>Conexão com o Servidor (Para o APK)</h3>
+              <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)' }}>Cole aqui o link azul (Túnel) que aparece no painel do computador</p>
+            </div>
+          </div>
+          
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <input 
+              type="text"
+              className="form-control"
+              value={serverUrl}
+              onChange={(e) => setServerUrlState(e.target.value)}
+              placeholder="https://seu-link-publico.loca.lt"
+              style={{ flex: 1 }}
+            />
+            <button className="btn-primary" onClick={() => { setServerUrl(serverUrl); toast.success('Conexão atualizada! Reiniciando...'); setTimeout(() => window.location.reload(), 1500); }}>
+              Atualizar Conexão
+            </button>
+          </div>
+        </section>
         
         {/* Sessão 0: Identidade Visual e PIX */}
         <section className="glass-panel" style={{ padding: '24px' }}>

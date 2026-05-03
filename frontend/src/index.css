@@ -27,7 +27,17 @@ body {
   background-image: 
     radial-gradient(circle at 0% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 40%),
     radial-gradient(circle at 100% 100%, rgba(59, 130, 246, 0.03) 0%, transparent 40%);
+  /* Suavização de fontes para mobile */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+@media (max-width: 768px) {
+  :root {
+    font-size: 14px; /* Reduz o tamanho base em mobile */
+  }
+}
+
 
 /* --- PRELOADER (GENDO STYLE) --- */
 .preloader {
@@ -427,7 +437,24 @@ body {
   }
 
   .glass-panel {
-    padding: 16px;
+    padding: 12px;
+  }
+
+  .card-title {
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+  }
+
+  /* Ajuste para itens de lista e botões em mobile */
+  button {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+  }
+
+  input, select {
+    padding: 8px 12px;
+    font-size: 0.9rem;
   }
 }
+
 

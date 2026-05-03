@@ -247,7 +247,9 @@ async function startTunnel(retries = 5) {
     try {
         console.log(`🌍 Tentando estabelecer acesso remoto (Tentativa ${6 - retries}/5)...`);
         const tunnel = await localtunnel({ port: PORT, subdomain: 'barberflow-elite-nedino' });
+        const localIp = Object.values(os.networkInterfaces()).flat().find(i => i.family === 'IPv4' && !i.internal)?.address;
         console.log(`🌍 ACESSO REMOTO ATIVO: ${tunnel.url}`);
+        console.log(`🏠 ACESSO LOCAL (Wi-Fi): http://${localIp}:${PORT}`);
         await dbManager.setSetting('public_url', tunnel.url);
         
         tunnel.on('close', () => {

@@ -20,7 +20,7 @@ export default function Sidebar() {
         <div style={{ background: 'var(--primary)', padding: '8px', borderRadius: '10px' }}>
           <Scissors size={24} color="#000" />
         </div>
-        <span style={{ fontSize: '1.2rem', fontWeight: '800', letterSpacing: '-0.5px' }}>BARBER<span style={{ color: 'var(--primary)' }}>FLOW</span></span>
+        <span style={{ fontSize: '1.2rem', fontWeight: '800', letterSpacing: '-0.5px' }}>ND<span style={{ color: 'var(--primary)' }}> PREMIUM</span></span>
       </div>
       
       <div className="sidebar-content">
@@ -73,7 +73,7 @@ export default function Sidebar() {
         <div className="glass-panel" style={{ padding: '12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{ width: '8px', height: '8px', background: 'var(--success)', borderRadius: '50%', boxShadow: '0 0 10px var(--success)' }}></div>
           <div>
-            <div style={{ fontWeight: '600' }}>Ultimate Elite v2.0</div>
+            <div style={{ fontWeight: '600' }}>ND Premium v2.0</div>
             <div style={{ color: 'var(--text-muted)' }}>Proteção Ativa</div>
           </div>
         </div>

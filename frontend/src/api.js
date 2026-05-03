@@ -8,31 +8,27 @@ export const setToken = (token) => {
 };
 
 export const getServerUrl = () => {
-  const hostname = window.location.hostname;
-  
-  // URL Pública Permanente (Túnel)
-  const PUBLIC_URL = 'https://barberflow-elite-nedino.loca.lt';
-
-  // Se estiver acessando via APK (hostname localhost no WebView), preferir a URL salva ou a Pública
-  if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    const saved = localStorage.getItem('server_url');
-    if (saved) return saved;
-    // Se não tiver salva, e estiver no PC (porta 3000 ou 5173 costumam ser dev), usa local:3001
-    if (window.location.port === '3000' || window.location.port === '5173') {
-        return `http://${hostname}:3001`;
-    }
-    // Caso contrário (APK), usa a URL pública
-    return PUBLIC_URL;
-  }
-
+  // 1. Prioridade Máxima: URL salva manualmente (via Configurações do App)
   const saved = localStorage.getItem('server_url');
   if (saved) return saved;
 
-  if (hostname.startsWith('192.168.')) {
-    return `${window.location.protocol}//${hostname}:3001`;
-  } else {
-    return `${window.location.protocol}//${window.location.hostname}${window.location.port ? ':' + window.location.port : ''}`;
+  const hostname = window.location.hostname;
+  const protocol = window.location.protocol;
+  const port = window.location.port;
+
+  // 2. Se estiver no PC (Localhost), usa a porta 3001
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return `${protocol}//${hostname}:3001`;
   }
+
+  // 3. Se estiver na Nuvem (Railway/Render) ou via Túnel
+  // Retorna a URL completa atual (origin)
+  if (hostname && hostname !== '') {
+    return window.location.origin;
+  }
+
+  // 4. Fallback Padrão (Caso nada funcione ou seja um APK sem hostname definido)
+  return 'https://barberflow-cloud.up.railway.app'; // URL sugerida para a nuvem
 };
 
 export const setServerUrl = (url) => {
@@ -49,6 +45,7 @@ export const apiFetch = async (url, options = {}, retries = 3) => {
   const token = getToken();
   const headers = {
     'Content-Type': 'application/json',
+    'Bypass-Tunnel-Reminder': 'true',
     ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
     ...options.headers,
   };
